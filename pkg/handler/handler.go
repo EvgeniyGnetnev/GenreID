@@ -16,12 +16,17 @@ func NewHandler(services *service.Service) *Handler {
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 
-	api := router.Group("/api") // сделать для главной страницы, без /api
+	router.LoadHTMLGlob("templates/*")
+
+	router.Static("/assets", "./assets")
+	router.Static("/wwwroot", "./wwwroot")
+
+	api := router.Group("/api", h.Index) // сделать для главной страницы, без /api
 	{
 		artists := api.Group("/artists", h.ArtistsMainPage)
 		{
 			artists.POST("/", h.CreateArtist)
-			artists.GET("/:id", h.ArtistPage)
+			artists.GET("/", h.Index) // для теста добавил обработчик главной страницы
 			artists.PUT("/:id", h.UpdateArtist)
 			artists.DELETE("/:id", h.DeleteArtist)
 		}
